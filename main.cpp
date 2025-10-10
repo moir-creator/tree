@@ -91,28 +91,33 @@ Node* searchMax(Node* node) {
     return searchMax(node->right);
 }
 
-void remove(int data) {
+void remove(Node* node, int data) {
     if (head == nullptr) {
         return;
     }
+    //if data is head
     if (data == head->data) {
         if (head->left == nullptr && head->right == nullptr) {
             Node* tmp = head;
             head = nullptr;
             delete tmp;
+            return;
         }
         if (head->right == nullptr) {
             Node* tmp = head;
             head = head->left;
             delete tmp;
+            return;
         }
         if (head->left == nullptr) {
             Node* tmp = head;
             head = head->right;
             delete tmp;
+            return;
         }
         if (head->left != nullptr && head->right != nullptr) {
             Node* tmp = head;
+            //>>> right branch only
             if (head->right->left == nullptr) {
                 head->right->left = head->left;
                 head = head->right;
@@ -120,7 +125,6 @@ void remove(int data) {
                 return;
             }
             if (head->right->left != nullptr) {
-               Node* tmp = head;
                Node* minValue = searchMin(head->right->left);
 
                Node* prev = head->right->left;
@@ -140,6 +144,103 @@ void remove(int data) {
             }
         }
     }
+    //Search the data in all the tree:
+    Node* tmp = node;
+    Node* prev = nullptr;
+    //Search the data Node*
+    while (tmp != nullptr && tmp->data != data) {
+        if (data < tmp->data) {
+            prev = tmp;
+            tmp = tmp->left;
+        }
+        if (data > tmp->data) {
+            prev = tmp;
+            tmp = tmp->right;
+        }
+    }
+    //Data Node* is find.
+    //DELETING PROCESS:
+    //If data Node* it doesn't have leaves:
+    if (tmp->right && tmp->left == nullptr) {
+        if (prev->left == tmp) {
+            delete prev->left;
+        }
+        if (prev->right == tmp) {
+            delete prev->right;
+        }
+    }
+    //If data Node* have leaves Only in Left:
+    if (tmp->left != nullptr && tmp->right == nullptr) {
+        if (prev->left == tmp) {
+            prev->left == tmp->left;
+            delete tmp;
+        }
+        if (prev->right == tmp) {
+            prev->right = tmp->left;
+            delete tmp;
+        }
+    }
+    //If data Node* have leaves Only in Right:
+    if (tmp->left == nullptr && tmp->right != nullptr) {
+        if (prev->left == tmp) {
+            prev->left = tmp->right;
+            delete tmp;
+        }
+        if (prev->right == tmp) {
+            prev->right = tmp->right;
+            delete tmp;
+            return;
+        }
+    }
+    ////If data Node* have Left & Right leaves:
+    if (tmp->left != nullptr && tmp->right != nullptr) {
+        if (tmp->left->left == nullptr && tmp->left->right == nullptr && tmp->right->left == nullptr && tmp->right->right == nullptr) {
+            //If it has only one generation
+            if (prev->left == tmp) {
+                prev->left = tmp->left;
+                delete tmp;
+                return;
+            }
+            if (prev->right == tmp) {
+                prev->right = tmp->left;
+                delete tmp;
+                return;
+            }
+        }
+        //If it has two and more generation of leaves
+        //HAVE NOT TEST:
+        if (tmp->left->left != nullptr || tmp->left->right != nullptr || tmp->right->left != nullptr || tmp->right->right != nullptr) {
+            if (prev->left == tmp) {
+                prev->left = tmp->left;
+                delete tmp;
+                return;
+            }
+            if (prev->right == tmp) {
+                prev->right = tmp->left;
+                delete tmp;
+            }
+        }
+    }
+    //If data Node* have full stack of leaves:
+    else {
+        Node* min = searchMin(tmp->right);
+        if (prev->left == tmp) {
+            prev->left = min;
+            min->left = tmp->left;
+            min->right = tmp->right;
+            tmp->right->left = nullptr;
+            delete tmp;
+            return;
+        }
+        if (prev->right == tmp) {
+            prev->right = min;
+            min->left = tmp->left;
+            min->right = tmp->right;
+            tmp->right->left = nullptr;
+            delete tmp;
+        }
+    }
+
     //НЕДОРАБОТАН!!! НЕДОРАБОТАН!!! НЕДОРАБОТАН!!! НЕДОРАБОТАН!!!
 }
 
@@ -410,7 +511,7 @@ int main() {
     addRecursive(head, 54);
     addRecursive(head, 62);
     addRecursive(head, 80);
-    remove(26);
+    remove(head, 42);
 
 
     //searchMin(head);
@@ -421,8 +522,9 @@ int main() {
 
     //reBalance(head);
     //std::cout << L << std::endl;
-    countLeft(head);
-    countRight(head);
+    std::cout << countLeft(head) << std::endl;
+    std::cout << countRight(head) << std::endl;
+
 
     output(head);
     return 0;
