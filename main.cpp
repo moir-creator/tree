@@ -417,8 +417,40 @@ void output(Node* node) {
     std::cout << node->data << " ";
     output(node->right);
 }
+int i = 0;
+int arr[] = {};
+void copyTree(Node* node) {
+    if (node == nullptr) {
+        return;
+    }
+    copyTree(node->left);
+    arr[i] = node->data;
+    std::cout << arr[i] << " ";
+    i++;
+    copyTree(node->right);
+}
 
+void deleteTree(Node* node) {
+    if (node == nullptr) {
+        return;
+    }
+    deleteTree(node->left);
+    deleteTree(node->right);
+    delete node;
+}
 
+void reBalanceQuick (Node* node) {
+    int size = countLeft(node) + countRight(node);
+    int mediana = size / 2;
+    deleteTree(node);
+
+    for (int i = mediana; i >= 0; i--) {
+        add(arr[i]);
+    }
+    for (int i = mediana+1; i < size; i++) {
+        add(arr[i]);
+    }
+}
 
 void reBalance(Node* node) {
     if (isBalance(node))
@@ -427,24 +459,88 @@ void reBalance(Node* node) {
     int left = countLeft(node);
     int right = countRight(node);
     int dif;
+    Node* last = nullptr;
     if (left > right) {
-        dif = left/right;
+        dif = left-right;
+        Node* tmp = node;
+        while (tmp->left != nullptr) {
+            tmp = tmp->left;
+            dif--;
+            last = tmp;
+            if (tmp->right != nullptr) {
+                dif--;
+                last = tmp->right;
+                if (tmp->right->left != nullptr) {
+                    dif--;
+                    last = tmp->right->left;
+                    if (tmp->right->left->left != nullptr) {
+                        dif--;
+                        last = tmp->right->left->left;
+                    }
+                    if (tmp->right->left->right != nullptr) {
+                        dif--;
+                        last = tmp->right->left->right;
+                    }
+                }
+                if (tmp->right->right != nullptr) {
+                    dif--;
+                    last = tmp->right->right;
+                    if (tmp->right->right->left != nullptr) {
+                        dif--;
+                        last = tmp->right->right->left;
+                    }
+                    if (tmp->right->right->right != nullptr) {
+                        dif--;
+                        last = tmp->right->right->right;
+                    }
+                }
+            }
+        }
     }
     if (right > left) {
-        dif = right/left;
-    }
-    //определяю в какую сторону смещать указатель для нового head
-    Node* tmp = node;
-    for (int i = 0; i < dif-1; i++ ) {
-        if (left > right)
-            tmp = tmp->left;
-        if (right > left)
+        dif = right-left;
+        Node* tmp = node;
+        while (tmp->right != nullptr) {
             tmp = tmp->right;
+            dif--;
+            last = tmp->right;
+            if (tmp->left != nullptr) {
+                dif--;
+                last = tmp->left;
+                if (tmp->left->left != nullptr) {
+                    dif--;
+                    last = tmp->left->left;
+                    if (tmp->left->left->left != nullptr) {
+                        dif--;
+                        last = tmp->left->left->left;
+                    }
+                    if (tmp->left->left->right != nullptr) {
+                        dif--;
+                        last = tmp->left->left->right;
+                    }
+                }
+                if (tmp->left->right != nullptr) {
+                    dif--;
+                    last = tmp->left->right;
+                    if (tmp->left->right->left != nullptr) {
+                        dif--;
+                        last = tmp->left->right->left;
+                    }
+                    if (tmp->left->right->right != nullptr) {
+                        dif--;
+                        last = tmp->left->right->right;
+                    }
+                }
+            }
+        }
     }
-    //как теперь создать дерево заново?
-    Node* t= tmp;
-    Node* thead = node;
-    head = nullptr;
+    Node* tmp = head;
+    ///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    head->data = last->data;
+
+
+
     //НЕДОРАБОТАН!!! НЕДОРАБОТАН!!! НЕДОРАБОТАН!!! НЕДОРАБОТАН!!!
 }
 
@@ -526,6 +622,16 @@ int main() {
     std::cout << countRight(head) << std::endl;
 
 
+    copyTree(head);
+   // for (int j = 0; j < sizeof(arr) / sizeof(arr[0]); j++) {
+   //     std::cout << arr[j] << " ";
+   // }
+    std::cout << std::endl;
+    std::cout << arr[2] << std::endl;
+    //output(head);
+
+    reBalanceQuick(head);
+    std::cout << std::endl;
     output(head);
     return 0;
 }
