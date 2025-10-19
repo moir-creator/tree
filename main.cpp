@@ -10,6 +10,8 @@ struct Node {
 Node* head = nullptr;
 int countL = 0;
 int countR = 0;
+int i = 0; //данные для метода copyTree
+int arr[] = {}; //данные для метода copyTree
 
 //Методы проекта:
 /*
@@ -23,12 +25,12 @@ reBalance -
 
  */
 
-void add(int data) {
-    if (head == nullptr) {
-        head = new Node(nullptr, data, nullptr);
+void add(Node*& node, int data) {
+    if (node == nullptr) {
+        node = new Node(nullptr, data, nullptr);
         return;
     }
-    Node* tmp = head;
+    Node* tmp = node;
     Node* prev = nullptr;
     while (tmp != nullptr) {
         if (data > tmp->data) {
@@ -48,8 +50,8 @@ void add(int data) {
     }
 }
 
-void addRecursive(Node* node, int data) {
-    if (head == nullptr) {
+void addRecursive(Node*& node, int data) {
+    if (node == nullptr) {
         head = new Node(nullptr, data, nullptr);
         return;
     }
@@ -417,15 +419,14 @@ void output(Node* node) {
     std::cout << node->data << " ";
     output(node->right);
 }
-int i = 0;
-int arr[] = {};
+
 void copyTree(Node* node) {
     if (node == nullptr) {
         return;
     }
     copyTree(node->left);
     arr[i] = node->data;
-    std::cout << arr[i] << " ";
+    //std::cout << arr[i] << " ";
     i++;
     copyTree(node->right);
 }
@@ -439,109 +440,39 @@ void deleteTree(Node* node) {
     delete node;
 }
 
-void reBalanceQuick (Node* node) {
-    int size = countLeft(node) + countRight(node);
-    int mediana = size / 2;
+void reBalanceQuick (Node*& node) {
+    int const size = countLeft(node) + countRight(node);
+    int const medID = size / 2;
+    copyTree(node);
     deleteTree(node);
-
-    for (int i = mediana; i >= 0; i--) {
-        add(arr[i]);
+    node = nullptr;
+    add(node, arr[medID]);
+    int exclude[] = {};
+    int s = 0;
+    for (int j = medID-1; j >= 0; j = j - 3) {
+        exclude[s] = arr[j];
+        add(node, arr[j]);
+        s++;
     }
-    for (int i = mediana+1; i < size; i++) {
-        add(arr[i]);
-    }
-}
-
-void reBalance(Node* node) {
-    if (isBalance(node))
-        return;
-    //определяю насколько смещен баланс дерева
-    int left = countLeft(node);
-    int right = countRight(node);
-    int dif;
-    Node* last = nullptr;
-    if (left > right) {
-        dif = left-right;
-        Node* tmp = node;
-        while (tmp->left != nullptr) {
-            tmp = tmp->left;
-            dif--;
-            last = tmp;
-            if (tmp->right != nullptr) {
-                dif--;
-                last = tmp->right;
-                if (tmp->right->left != nullptr) {
-                    dif--;
-                    last = tmp->right->left;
-                    if (tmp->right->left->left != nullptr) {
-                        dif--;
-                        last = tmp->right->left->left;
-                    }
-                    if (tmp->right->left->right != nullptr) {
-                        dif--;
-                        last = tmp->right->left->right;
-                    }
-                }
-                if (tmp->right->right != nullptr) {
-                    dif--;
-                    last = tmp->right->right;
-                    if (tmp->right->right->left != nullptr) {
-                        dif--;
-                        last = tmp->right->right->left;
-                    }
-                    if (tmp->right->right->right != nullptr) {
-                        dif--;
-                        last = tmp->right->right->right;
-                    }
-                }
+    for (int j = medID-1; j >= 0; j--) {
+        for (int ex = 0; ex < s; ex++ ) {
+            if (arr[j] != exclude[s]) {
+                add(node, arr[j]);
             }
         }
     }
-    if (right > left) {
-        dif = right-left;
-        Node* tmp = node;
-        while (tmp->right != nullptr) {
-            tmp = tmp->right;
-            dif--;
-            last = tmp->right;
-            if (tmp->left != nullptr) {
-                dif--;
-                last = tmp->left;
-                if (tmp->left->left != nullptr) {
-                    dif--;
-                    last = tmp->left->left;
-                    if (tmp->left->left->left != nullptr) {
-                        dif--;
-                        last = tmp->left->left->left;
-                    }
-                    if (tmp->left->left->right != nullptr) {
-                        dif--;
-                        last = tmp->left->left->right;
-                    }
-                }
-                if (tmp->left->right != nullptr) {
-                    dif--;
-                    last = tmp->left->right;
-                    if (tmp->left->right->left != nullptr) {
-                        dif--;
-                        last = tmp->left->right->left;
-                    }
-                    if (tmp->left->right->right != nullptr) {
-                        dif--;
-                        last = tmp->left->right->right;
-                    }
-                }
+    for (int k = medID+1; k <= size; k = k + 3) {
+        exclude[s] = arr[k];
+        add(node, arr[k]);
+        s++;
+    }
+    for (int k = medID+1; k <= size; k++) {
+        for (int ex = 0; ex < s; ex++ ) {
+            if (arr[k] != exclude[s]) {
+                add(node, arr[k]);
             }
         }
     }
-    Node* tmp = head;
-    ///////////////////////////////////////////////////////////////////////
-    ///////////////////////////////////////////////////////////////////////
-    head->data = last->data;
-
-
-
-    //НЕДОРАБОТАН!!! НЕДОРАБОТАН!!! НЕДОРАБОТАН!!! НЕДОРАБОТАН!!!
 }
 
 //++ еще один add рекурсивный
@@ -622,16 +553,17 @@ int main() {
     std::cout << countRight(head) << std::endl;
 
 
-    copyTree(head);
-   // for (int j = 0; j < sizeof(arr) / sizeof(arr[0]); j++) {
-   //     std::cout << arr[j] << " ";
-   // }
-    std::cout << std::endl;
-    std::cout << arr[2] << std::endl;
+   //copyTree(head);
+   //for (int j = 0; j < sizeof(arr) / sizeof(arr[0]); j++) {
+   //   std::cout << arr[j] << " ";
+   //}
+    //std::cout << std::endl;
+    //std::cout << arr[2] << std::endl;
     //output(head);
 
     reBalanceQuick(head);
     std::cout << std::endl;
+    //std::cout << head->data << std::endl;
     output(head);
     return 0;
 }
