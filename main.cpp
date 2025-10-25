@@ -451,16 +451,16 @@ void deleteTree(Node* node) {
     delete node;
 }
 
-int nodeCount(Node* node) {
+int nodesCount(Node* node) {
     if (node == nullptr) {
         return 0;
     } else {
-        return nodeCount(node->left) + nodeCount(node->right) + 1;
+        return nodesCount(node->left) + nodesCount(node->right) + 1;
     }
 }
 
 void reBalanceQuick (Node*& node) {
-    int size = nodeCount(node);
+    int size = nodesCount(node);
     int const medID = size / 2;
     copyTree(node);
     deleteTree(node);
