@@ -3,12 +3,13 @@ In this repository, I worked with binary tree as a data structure and developed 
 - addRecursive
 - searchMin & searchMax
 - remove //.. in development
-- searchDataLink //.. return the link on Node
-- searchData
+- searchDataLink //.. return the link of Node
+- searchData //bool return "true" if data is in Tree, else "false"
+- searchDataWay //.. left->right->left
 - countLeft & countRight //.. non recursive and approximately inaccurate count
 - isBalance
 - copyTree //.. coppy the data of tree on sorted array
 - deleteTree
-- countNodes
-- reBalance //.. in development
+- nodesCount
+- reBalance // copy the data of Tree in sorted arr[], then link the mediana to the Head 
 - output
