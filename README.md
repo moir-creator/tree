@@ -1,0 +1,14 @@
+In this repository, I worked with binary tree as a data structure and developed the following methods:
+- add
+- addRecursive
+- searchMin & searchMax
+- remove //.. in development
+- searchDataLink //.. return the link on Node
+- searchData
+- countLeft & countRight //.. non recursive and approximately inaccurate count
+- isBalance
+- copyTree //.. coppy the data of tree on sorted array
+- deleteTree
+- countNodes
+- reBalance //.. in development
+- output
