@@ -12,6 +12,7 @@ int countL = 0;
 int countR = 0;
 int i = 0; //данные для метода copyTree
 int arr[] = {}; //данные для метода copyTree
+int exclude[] = {};
 
 //Методы проекта:
 /*
@@ -280,7 +281,17 @@ Node* searchDataLink(Node* node, int data) {
     std::cout << "Data " << tmp->data << " was found" << std::endl;
 }
 
-int searchData(Node* node, int data) {
+bool searchData(Node* node, int data) {
+    if (node == nullptr) {
+        return false;
+    }
+    if (node->data == data) {
+        return true;
+    }
+    return searchData(node->left, data) || searchData(node->right, data);
+}
+
+int searchDataWay(Node* node, int data) {
     Node* tmp = node;
     int countL = 0;
     int countR = 0;
@@ -440,37 +451,35 @@ void deleteTree(Node* node) {
     delete node;
 }
 
+int nodeCount(Node* node) {
+    if (node == nullptr) {
+        return 0;
+    } else {
+        return nodeCount(node->left) + nodeCount(node->right) + 1;
+    }
+}
+
 void reBalanceQuick (Node*& node) {
-    int const size = countLeft(node) + countRight(node);
+    int size = nodeCount(node);
     int const medID = size / 2;
     copyTree(node);
     deleteTree(node);
     node = nullptr;
     add(node, arr[medID]);
-    int exclude[] = {};
-    int s = 0;
-    for (int j = medID-1; j >= 0; j = j - 3) {
-        exclude[s] = arr[j];
+    for (int j = medID-3; j >= 0; j = j - 3) {
         add(node, arr[j]);
-        s++;
+    }
+    for (int k = medID+3; k < size; k = k + 3) {
+        add(node, arr[k]);
     }
     for (int j = medID-1; j >= 0; j--) {
-        for (int ex = 0; ex < s; ex++ ) {
-            if (arr[j] != exclude[s]) {
-                add(node, arr[j]);
-            }
+        if (!searchData(node, arr[j])) {
+            add(node, arr[j]);
         }
     }
-    for (int k = medID+1; k <= size; k = k + 3) {
-        exclude[s] = arr[k];
-        add(node, arr[k]);
-        s++;
-    }
-    for (int k = medID+1; k <= size; k++) {
-        for (int ex = 0; ex < s; ex++ ) {
-            if (arr[k] != exclude[s]) {
-                add(node, arr[k]);
-            }
+    for (int k = medID+1; k < size; k++) {
+        if (!searchData(node, arr[k])) {
+            add(node, arr[k]);
         }
     }
 }
@@ -549,8 +558,8 @@ int main() {
 
     //reBalance(head);
     //std::cout << L << std::endl;
-    std::cout << countLeft(head) << std::endl;
-    std::cout << countRight(head) << std::endl;
+    //std::cout << countLeft(head) << std::endl;
+    //std::cout << countRight(head) << std::endl;
 
 
    //copyTree(head);
@@ -559,11 +568,14 @@ int main() {
    //}
     //std::cout << std::endl;
     //std::cout << arr[2] << std::endl;
-    //output(head);
+    output(head);
 
     reBalanceQuick(head);
+    //std::cout << nodeCount(head);
     std::cout << std::endl;
-    //std::cout << head->data << std::endl;
+    std::cout << head->data << std::endl;
     output(head);
+    //if (searchData(head, 18))
+    //    std::cout << "Data is found";
     return 0;
 }
